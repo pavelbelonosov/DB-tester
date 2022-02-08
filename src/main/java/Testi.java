@@ -16,7 +16,7 @@ public class Testi {
             System.out.println("Error: cannot create table" + e.getMessage());
         }
 //1
-        System.out.println("1 test without enhanced indexing");
+       System.out.println("1 test without enhanced indexing");
         try {
             testi.insertMillionRows(dbURL);
             testi.thousandQueries(dbURL);
@@ -34,7 +34,7 @@ public class Testi {
             System.out.println("");
         }
 //2
-        System.out.println("2 test, using enhanced indexing before adding rows");
+         System.out.println("2 test, using enhanced indexing before adding rows");
         try {
             testi.addEnhancedIndex(dbURL);
             testi.insertMillionRows(dbURL);
@@ -68,7 +68,6 @@ public class Testi {
 
     void insertMillionRows(String dbURL) throws SQLException {
         Connection db = DriverManager.getConnection("jdbc:sqlite:" + dbURL);
-        Statement s = db.createStatement();
         db.setAutoCommit(false);
         PreparedStatement p = db.prepareStatement("INSERT INTO Elokuvat (nimi,vuosi) VALUES (?,?)");
         long startTimeInsert = System.currentTimeMillis();
@@ -82,29 +81,29 @@ public class Testi {
         db.commit();
         long endTimeInsert = System.currentTimeMillis();
         db.setAutoCommit(true);
-        System.out.println("total time taken to insert the batch of one million inserts = " + (endTimeInsert - startTimeInsert) / 1000.0 + " s");
+        System.out.println("total time taken to insert the batch of one million inserts = " + (endTimeInsert - startTimeInsert) / 1000 + " s");
         db.close();
     }
 
     void thousandQueries(String dbURL) throws SQLException {
         Connection db = DriverManager.getConnection("jdbc:sqlite:" + dbURL);
-        Statement s = db.createStatement();
-        PreparedStatement p = db.prepareStatement("SELECT COUNT(DISTINCT nimi) FROM Elokuvat WHERE vuosi=?");
+        PreparedStatement p = db.prepareStatement("SELECT COUNT(nimi) FROM Elokuvat WHERE vuosi=?");
         Testi testi = new Testi();
         long startTimeQueries = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
             p.setInt(1, testi.randomYear(1900, 2000));
             p.executeQuery();
         }
+
         long endTimeQueries = System.currentTimeMillis();
-        System.out.println("total time taken to query one thousand select counts = " + (endTimeQueries - startTimeQueries) / 1000.0 + " s");
+        System.out.println("total time taken to query one thousand select counts = " + (endTimeQueries - startTimeQueries) / 1000 + " s");
         db.close();
     }
 
     void addEnhancedIndex(String dbURL) throws SQLException {
         Connection db = DriverManager.getConnection("jdbc:sqlite:" + dbURL);
         Statement s = db.createStatement();
-        s.execute("CREATE INDEX idx_vuosi ON Elokuvat (vuosi)");
+        s.execute("CREATE INDEX idx_vuosi ON Elokuvat (vuosi, nimi)");
         db.close();
     }
 
