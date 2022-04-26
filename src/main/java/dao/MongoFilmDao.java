@@ -11,7 +11,6 @@ import org.bson.conversions.Bson;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.gte;
 import static com.mongodb.client.model.Updates.*;
 
 
@@ -20,15 +19,17 @@ public class MongoFilmDao implements NoSqlDao<Film, Integer> {
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> collection;
     private final Set<Integer> ids;
+    private String dbname;
 
     public MongoFilmDao(String mongoURI) {
         mongoClient = MongoClients.create(mongoURI);
         ids = new HashSet<>();
+        this.dbname = "dataBase" + UUID.randomUUID();
     }
 
     @Override
     public void connectDB() {
-        mongoDatabase = mongoClient.getDatabase("dataBase");
+        mongoDatabase = mongoClient.getDatabase(dbname);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class MongoFilmDao implements NoSqlDao<Film, Integer> {
     }
 
     public void addEnhancedIndex() {
-        collection.createIndex(Indexes.ascending( "year"));
+        collection.createIndex(Indexes.ascending("year"));
     }
 
     public void dropEnhancedIndex() {
@@ -114,6 +115,6 @@ public class MongoFilmDao implements NoSqlDao<Film, Integer> {
 
     public long getDatabaseSize() {
         Document collStatsResults = mongoDatabase.runCommand(new Document("collStats", "Films"));
-        return Long.valueOf(collStatsResults.get("totalSize").toString()) / 1024 / 1024;
+        return Long.parseLong(collStatsResults.get("totalSize").toString()) / 1024;
     }
 }

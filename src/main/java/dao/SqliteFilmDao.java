@@ -6,12 +6,15 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SqliteFilmDao implements Dao<Film, Integer> {
     private final String dbURL;
+    private String indexName;
 
     public SqliteFilmDao(String folder, String db) {
-        dbURL = folder + db;
+        dbURL = folder + db + UUID.randomUUID() + ".db";
+        indexName = "idx_" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @Override
@@ -139,7 +142,7 @@ public class SqliteFilmDao implements Dao<Film, Integer> {
     public void addEnhancedIndex() throws SQLException {
         try (Connection db = DriverManager.getConnection("jdbc:sqlite:" + dbURL);
              Statement s = db.createStatement()) {
-            s.execute("CREATE INDEX idx_year ON Films (year, name)");
+            s.execute("CREATE INDEX " + indexName + " ON Films (year)");
         }
     }
 
@@ -147,13 +150,13 @@ public class SqliteFilmDao implements Dao<Film, Integer> {
     public void dropEnhancedIndex() throws SQLException {
         try (Connection db = DriverManager.getConnection("jdbc:sqlite:" + dbURL);
              Statement s = db.createStatement()) {
-            s.execute("DROP INDEX idx_year");
+            s.execute("DROP INDEX "+indexName);
         }
     }
 
     @Override
     public long getDatabaseSize() {
         File file = new File(dbURL);
-        return (file.length() / 1024) / 1024;
+        return file.length() / 1024;
     }
 }

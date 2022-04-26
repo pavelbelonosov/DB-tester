@@ -7,31 +7,37 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class PostgresFilmDao implements Dao<Film, Integer> {
     private final String dbURL;
     private final String user;
     private final String pass;
-    private final String folder;
+    private File file;
+    private String dbName;
+    private String dbSpace;
+    private String indexName;
 
     public PostgresFilmDao(String folder, String dbUrl, String user, String pass) {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName("org.postgresql.Driver");//loading driver
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        this.folder = folder;
         this.dbURL = dbUrl;
         this.user = user;
         this.pass = pass;
+        this.file = new File(folder + "postgres" + UUID.randomUUID() + "/");
+        this.dbSpace = "dbspace" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.dbName = "db" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.indexName = "idx_" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @Override
     public void createDB() throws SQLException {
-        File file = new File(folder + "postgres/");
         file.mkdirs();
-        String tablespace = "CREATE TABLESPACE dbspace LOCATION '" + file.getAbsolutePath() + "'";
-        String createDB = "CREATE DATABASE db OWNER " + user + " TABLESPACE dbspace";
+        String tablespace = "CREATE TABLESPACE " + dbSpace + " LOCATION '" + file.getAbsolutePath() + "'";
+        String createDB = "CREATE DATABASE " + dbName + " OWNER " + user + " TABLESPACE " + dbSpace;
         try (Connection db = DriverManager.getConnection("jdbc:postgresql:" + dbURL, user, pass);
              Statement s = db.createStatement()) {
             s.execute(tablespace);
@@ -97,7 +103,7 @@ public class PostgresFilmDao implements Dao<Film, Integer> {
              PreparedStatement stmt = db.prepareStatement("SELECT * FROM Films WHERE year=?")) {
             stmt.setInt(1, (Integer) year);
             ResultSet rs = stmt.executeQuery();
-            while((rs.next())) {
+            while ((rs.next())) {
                 films.add(new Film(rs.getInt("id"), rs.getString("name"), rs.getInt("year")));
             }
             rs.close();
@@ -137,12 +143,12 @@ public class PostgresFilmDao implements Dao<Film, Integer> {
 
     @Override
     public void dropDB() throws SQLException {
-        String dropDB = "DROP DATABASE IF EXISTS db";
-        String dropTablespace = "DROP TABLESPACE IF EXISTS dbspace";
+        String dropDB = "DROP DATABASE IF EXISTS " + dbName;
+        String dropTableSpace = "DROP TABLESPACE IF EXISTS " + dbSpace;
         try (Connection db = DriverManager.getConnection("jdbc:postgresql:" + dbURL, user, pass);
              Statement s = db.createStatement()) {
             s.execute(dropDB);
-            s.execute(dropTablespace);
+            s.execute(dropTableSpace);
         }
     }
 
@@ -162,9 +168,10 @@ public class PostgresFilmDao implements Dao<Film, Integer> {
 
     @Override
     public void addEnhancedIndex() throws SQLException {
+
         try (Connection db = DriverManager.getConnection("jdbc:postgresql:" + dbURL, user, pass);
              Statement s = db.createStatement()) {
-            s.execute("CREATE INDEX CONCURRENTLY idx_year ON Films (year, name)");
+            s.execute("CREATE INDEX CONCURRENTLY " + indexName + " ON Films (year)");
         }
     }
 
@@ -172,14 +179,13 @@ public class PostgresFilmDao implements Dao<Film, Integer> {
     public void dropEnhancedIndex() throws SQLException {
         try (Connection db = DriverManager.getConnection("jdbc:postgresql:" + dbURL, user, pass);
              Statement s = db.createStatement()) {
-            s.execute("DROP INDEX CONCURRENTLY IF EXISTS idx_year");
+            s.execute("DROP INDEX CONCURRENTLY IF EXISTS "+indexName);
         }
     }
 
     @Override
     public long getDatabaseSize() {
-        File dbFolder = new File(folder + "postgres");
-        return (FileUtils.sizeOfDirectory(dbFolder) / 1024) / 1024;
+        return FileUtils.sizeOfDirectory(file) / 1024;
     }
 
 }
