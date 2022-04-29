@@ -11,30 +11,35 @@ import java.util.List;
 import java.util.Random;
 
 public class TestService {
-    private final ResultTableHtml page;
+    private ResultTableHtml page;
     private final Dao sqlite;
     private final Dao postgres;
     private final NoSqlDao mongo;
-    private final int rows;
+    private long rows;
+    private long queries;
     private final List<Long> firstTestResults;
     private final List<Long> secondTestResult;
     private final List<Long> thirdTestResult;
     private List<List<Film>> queriesResultList;
     private ResultServer server;
 
-    public TestService(Dao sqlite, Dao postgres, NoSqlDao mongo, int rows, ResultServer server) {
+
+    public TestService(Dao sqlite, Dao postgres, NoSqlDao mongo,
+                       ResultServer server, long rows, long queries, String clientID) {
         firstTestResults = new ArrayList<>();
         secondTestResult = new ArrayList<>();
         thirdTestResult = new ArrayList<>();
-        page = new ResultTableHtml(rows, firstTestResults, secondTestResult, thirdTestResult);
+        queriesResultList = new ArrayList<>();
+        page = new ResultTableHtml(rows, queries, firstTestResults, secondTestResult, thirdTestResult, clientID);
         this.sqlite = sqlite;
         this.postgres = postgres;
         this.mongo = mongo;
         this.rows = rows;
-        this.queriesResultList = new ArrayList<>();
+        this.queries = queries;
         this.server = server;
 
     }
+
 
     public void test() {
         //1 test creating DB, table, inserting rows, executing queries, no enhanced indexing
@@ -58,6 +63,7 @@ public class TestService {
             System.out.println("Postgres");
             postgres.createDB();
             postgres.createTable();
+            postgres.clearAllRows();
             firstTestResults.add(insert(postgres));
             queriesResultList.add(postgres.findAll());
             firstTestResults.add(executeQueries(postgres));
@@ -85,6 +91,7 @@ public class TestService {
             sqlite.clearAllRows();
             sqlite.addEnhancedIndex();
             secondTestResult.add(insert(sqlite));
+            queriesResultList.add(sqlite.findAll());
             secondTestResult.add(executeQueries(sqlite));
             secondTestResult.add(sqlite.getDatabaseSize());
             sqlite.dropEnhancedIndex();
@@ -99,6 +106,7 @@ public class TestService {
             postgres.clearAllRows();
             postgres.addEnhancedIndex();
             secondTestResult.add(insert(postgres));
+            queriesResultList.add(postgres.findAll());
             secondTestResult.add(executeQueries(postgres));
             secondTestResult.add(postgres.getDatabaseSize());
             postgres.dropEnhancedIndex();
@@ -114,6 +122,7 @@ public class TestService {
         mongo.dropCollection();
         mongo.addEnhancedIndex();
         secondTestResult.add(insert(mongo));
+        queriesResultList.add(mongo.findAll());
         secondTestResult.add(executeQueries(mongo));
         secondTestResult.add(mongo.getDatabaseSize());
         mongo.dropEnhancedIndex();
@@ -124,6 +133,7 @@ public class TestService {
             System.out.println("Sqlite");
             sqlite.clearAllRows();
             thirdTestResult.add(insert(sqlite));
+            queriesResultList.add(sqlite.findAll());
             sqlite.addEnhancedIndex();
             thirdTestResult.add(executeQueries(sqlite));
             thirdTestResult.add(sqlite.getDatabaseSize());
@@ -139,6 +149,7 @@ public class TestService {
             System.out.println("Postgres");
             postgres.clearAllRows();
             thirdTestResult.add(insert(postgres));
+            queriesResultList.add(postgres.findAll());
             postgres.addEnhancedIndex();
             thirdTestResult.add(executeQueries(postgres));
             thirdTestResult.add(postgres.getDatabaseSize());
@@ -155,6 +166,7 @@ public class TestService {
         mongo.connectCollection();
         mongo.dropCollection();
         thirdTestResult.add(insert(mongo));
+        queriesResultList.add(mongo.findAll());
         mongo.addEnhancedIndex();
         thirdTestResult.add(executeQueries(mongo));
         thirdTestResult.add(mongo.getDatabaseSize());
@@ -162,11 +174,8 @@ public class TestService {
         mongo.dropCollection();
 
         page.createContent();
-        //page.saveFile();
-        server.setPage(page);
         server.setResults(queriesResultList);
-
-
+        server.setPage(page);
     }
 
     private long insert(Dao dao) throws SQLException {
@@ -198,12 +207,12 @@ public class TestService {
     private long executeQueries(Dao dao) throws SQLException {
         long startTimeQueries = System.currentTimeMillis();
         List<Film> temp = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            temp.addAll(dao.findByAttribute(randomYear(1900, 2022)));//last query results
+        for (int i = 0; i < queries; i++) {
+            temp.addAll(dao.findByAttribute(randomYear(1900, 2022)));
         }
         long endTimeQueries = System.currentTimeMillis();
         long result = endTimeQueries - startTimeQueries;
-        System.out.println("total time taken to query one thousand select counts = " + (endTimeQueries - startTimeQueries) / 1000 + " s");
+        System.out.println("total time taken to query " + queries + " select counts = " + (endTimeQueries - startTimeQueries) / 1000 + " s");
         //temp.stream().forEach(System.out::println);
         queriesResultList.add(temp);
         return result;
@@ -212,12 +221,12 @@ public class TestService {
     private long executeQueries(NoSqlDao dao) {
         long startTimeQueries = System.currentTimeMillis();
         List<Film> temp = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            temp.addAll(dao.findByAttribute(randomYear(1900, 2022)));//last query results
+        for (int i = 0; i < queries; i++) {
+            temp.addAll(dao.findByAttribute(randomYear(1900, 2022)));
         }
         long endTimeQueries = System.currentTimeMillis();
         long result = endTimeQueries - startTimeQueries;
-        System.out.println("total time taken to query one thousand select counts = " + (endTimeQueries - startTimeQueries) / 1000 + " s");
+        System.out.println("total time taken to query " + queries + " select counts = " + (endTimeQueries - startTimeQueries) / 1000 + " s");
         //temp.stream().forEach(System.out::println);
         queriesResultList.add(temp);
         return result;
@@ -238,4 +247,14 @@ public class TestService {
         Random rand = new Random();
         return rand.nextInt((max - min) + 1) + min;
     }
+
+    public ResultTableHtml getPage() {
+        return page;
+    }
+
+    public List<List<Film>> getQueriesResultList() {
+        return queriesResultList;
+    }
+
+
 }
