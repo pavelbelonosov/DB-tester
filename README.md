@@ -1,5 +1,6 @@
 # Database testing
-This project is devoted to overviewing some popular databases (Sqlite, Postgres, Mongo), the role of right indexing and DAO pattern in Java. 
+This project is devoted to overviewing some popular databases (Sqlite, Postgres, Mongo), the role of right indexing and DAO pattern in Java.
+https://user-images.githubusercontent.com/96337244/166819664-2edf4c9d-3378-403c-bd0e-354143e8ce47.mp4
 
 ## Intro
 The program creates DBs with one table/collection `Films`, containing three attributes/fields: `id`, `name`, `year`.
