@@ -9,6 +9,7 @@ public class PropertiesHandler {
 
     public String getProperty(String key) {
         try (InputStream input = getClass().getResource("/application.properties").openStream()) {
+        //try (InputStream input = getClass().getResource("/application_local.properties").openStream()) {//change if you want run app locally
             Properties prop = new Properties();
             if (input == null) {
                 System.out.println("Cannot read properties file");

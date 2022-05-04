@@ -6,38 +6,32 @@ import util.PropertiesHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private ResultTableHtml page;
-    private ServerSocket server;
     private List<List<Film>> results;
     private ResultServer rs;
     private String htmlLine;
     private String clientID;
 
 
-    public ClientHandler(Socket socket, ServerSocket server, ResultTableHtml page, ResultServer rs, List<List<Film>> results, String id) {
+    public ClientHandler(Socket socket, ResultTableHtml page,
+                         ResultServer rs, List<List<Film>> results, String id) {
         this.clientSocket = socket;
-        this.server = server;
         this.page = page;
         this.results = results;
         this.rs = rs;
         htmlLine = "";
         this.clientID = id;
-
-
     }
 
     public void run() {
         try (Scanner reader = new Scanner(clientSocket.getInputStream());
              PrintWriter writer = new PrintWriter(clientSocket.getOutputStream())) {
-            //System.out.println( clientID);
             if (reader.hasNextLine()) {
                 String request = reader.nextLine();
                 System.out.println(request);
@@ -47,7 +41,6 @@ public class ClientHandler implements Runnable {
                 }
                 parseForm(request);
             }
-
             writer.println("HTTP/1.1 200 OK");
             writer.println("Content-Type: text/html");
             writer.println("");
@@ -204,12 +197,12 @@ public class ClientHandler implements Runnable {
 
             String parts3[] = parts[1].split("=");
             long queries = Long.parseLong(parts3[1].replace(" HTTP/1.1", ""));
-            if (rows <= 1000000 && queries <= 1000) {
+            if (rows <= 1000000 && queries <= 1000) {// depends on java heap space//heroku limits 512 dyno memory
                 instantiateTestService(rows, queries);
                 htmlLine = "<td><a href=\"resultTable" + clientID + "\" target=\"_blank\">Result Table </a></td>\n";
                 return true;
             } else {
-                htmlLine = "<p>Pss, buddy, I'm not a supercomputer, ok? Just slow down</p>";
+                htmlLine = "<p><b>Pss, buddy, I'm not a supercomputer, ok? Just slow down</b></p>";
             }
         }
         return false;
@@ -218,11 +211,8 @@ public class ClientHandler implements Runnable {
     private void instantiateTestService(long rows, long numQueries) {
         PropertiesHandler prop = new PropertiesHandler();
         SqliteFilmDao sqlite = new SqliteFilmDao(prop.getProperty("folder"), prop.getProperty("sqlite"));
-        PostgresFilmDao postgres = new PostgresFilmDao(prop.getProperty("folder"),
-                prop.getProperty("postgres"),
-                prop.getProperty("postgresUser"),
-                prop.getProperty("postgresPass"));
-        MongoFilmDao mongo = new MongoFilmDao(prop.getProperty("mongoURI"));
+        PostgresFilmDao postgres = new PostgresFilmDao();
+        MongoFilmDao mongo = new MongoFilmDao();
         TestService service = new TestService(sqlite, postgres, mongo, rs, rows, numQueries, clientID);
         service.test();
     }

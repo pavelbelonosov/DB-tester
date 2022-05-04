@@ -28,27 +28,17 @@ public class ResultServer {
     }
 
     public void startServer() throws IOException {
-
-        ServerSocket server = null;
         try {
-            server = new ServerSocket(8080);
+            ServerSocket server = new ServerSocket(8080);
             server.setReuseAddress(true);
             System.out.println("Server started at 8080");
             while (true) {
                 Socket socket = server.accept();
-                ClientHandler clientSock = new ClientHandler(socket, server, page, this, results, clientId);
+                ClientHandler clientSock = new ClientHandler(socket, page, this, results, clientId);
                 new Thread(clientSock).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (server != null) {
-                try {
-                    server.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }

@@ -31,7 +31,7 @@ public interface Dao<T, K> {
 
     void dropEnhancedIndex() throws SQLException;
 
-    long getDatabaseSize();
+    long getDatabaseSize() throws SQLException;
 
 }
 

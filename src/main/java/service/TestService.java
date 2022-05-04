@@ -40,7 +40,6 @@ public class TestService {
 
     }
 
-
     public void test() {
         //1 test creating DB, table, inserting rows, executing queries, no enhanced indexing
         System.out.println("1 test without enhanced indexing");

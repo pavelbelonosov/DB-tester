@@ -19,10 +19,16 @@ public class MongoFilmDao implements NoSqlDao<Film, Integer> {
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> collection;
     private final Set<Integer> ids;
-    private String dbname;
+    private final String dbname;
+    private final String mongoUser;
+    private final String mongoPassword;
+    private final String mongoHost;
 
-    public MongoFilmDao(String mongoURI) {
-        mongoClient = MongoClients.create(mongoURI);
+    public MongoFilmDao() {
+        mongoUser = System.getenv("MONGO_USER");
+        mongoPassword = System.getenv("MONGO_PASSWORD");
+        mongoHost = System.getenv("MONGO_HOST");
+        mongoClient = MongoClients.create("mongodb://" + mongoUser + ":" + mongoPassword + "@" + mongoHost + ":27017");
         ids = new HashSet<>();
         this.dbname = "dataBase" + UUID.randomUUID();
     }

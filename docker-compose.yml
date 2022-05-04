@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+    app:
+      build: .
+      restart: always
+      ports:
+       - 8080:8080
+      environment:
+         - _JAVA_OPTIONS=-Xmx1g
+         - POSTGRES_HOST=postgres_db
+         - POSTGRES_USER=postgres
+         - POSTGRES_PASSWORD=166831
+         - MONGO_HOST=mongo_db
+         - MONGO_USER=atm
+         - MONGO_PASSWORD=166831
+      command: ["java", "-jar", "./DBtest-1.0.jar"]
+      container_name: dbtest_container
+      
+    postgres:
+      image: postgres:13.2-alpine
+      restart: unless-stopped
+     #ports:
+     #  - 5432:5432
+      environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_PASSWORD=166831
+     #volumes:
+            #- ./pg_data:/var/lib/postgresql/data
+      container_name: postgres_db
+          
+    mongo:
+      image: mongo
+      #ports:
+      #  - 27017:27017
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=atm
+        - MONGO_INITDB_ROOT_PASSWORD=166831
+      container_name: mongo_db
+       
+    adminer:
+       image: adminer
+       restart: always
+      #ports:
+      #  - 3450:8080
+       container_name: admin
+         
+   # nginx:
+    #    image: nginx:latest
+     #   ports:
+      #      - 80:80
+       # volumes:
+        #    - .\nginx\nginx.conf:/etc/nginx/nginx.conf:ro
