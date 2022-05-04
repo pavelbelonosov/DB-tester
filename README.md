@@ -1,6 +1,11 @@
 # Database testing
 This project is devoted to overviewing some popular databases (Sqlite, Postgres, Mongo), the role of right indexing and DAO pattern in Java.
-https://user-images.githubusercontent.com/96337244/166819664-2edf4c9d-3378-403c-bd0e-354143e8ce47.mp4
+
+
+https://user-images.githubusercontent.com/96337244/166820350-6d67d136-b1c6-44fb-b909-4100076ac38a.mp4
+
+
+
 
 ## Intro
 The program creates DBs with one table/collection `Films`, containing three attributes/fields: `id`, `name`, `year`.
@@ -49,4 +54,4 @@ To reduce running time, decrease number of rows/documents.
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-[MIT]()
+[MIT](https://github.com/pavelbelonosov/DB-tester/blob/master/LICENSE)
