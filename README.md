@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/96337244/166820350-6d67d136-b1c6-44fb-
 ## Intro
 The program creates DBs with one table/collection `Films`, containing three attributes/fields: `id`, `name`, `year`.
 
-- Insert rows/docs: program calculates time of executing given number of INSERT-operations in one batch (max 1_000_000_000).
+- Insert rows/docs: program calculates time of executing given number of INSERT-operations in one batch (max 1_000_000).
 - Execute queries: program calculates time of executing given number of SELECT-operations. One query-one connection. No caching (max 1_000).
 
 After each test indexes are dropped, tables are cleared.
