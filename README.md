@@ -38,8 +38,8 @@ Server accepts the following environment variables:
 
 Locally:
 Run with `java -jar DBtest-1.0.jar`. Don't forget to set variables: 
-  On linux, execute: `$ export VAR_NAME="value"`
-  On windows: `C:\>SomeDir>set VAR_NAME="value"`
+  - On linux, execute: `$ export VAR_NAME="value"`.
+  - On windows: `C:\>SomeDir>set VAR_NAME="value"`.
 
 VIA Docker:
 Run with `docker-compose up`. It will settle multi-container project.
