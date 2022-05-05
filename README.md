@@ -16,7 +16,7 @@ The program creates DBs with one table/collection `Films`, containing three attr
 After each test indexes are dropped, tables are cleared.
 
 ## Prerequisites for development
-Requires Java 17+, Sqlite 3, Postgres 14.1+, MongoDB 5.0.6+. You can use Docker containers to build all necessary databases together.
+Requires Java 17+, Sqlite 3, Postgres 13.2+, MongoDB 5.0.6+. You can use Docker containers to build all necessary databases together.
 
 You can change Sqlite database's settings in `application.properties`. Program creates folder `tmpProject` to store DBs, so make sure it has all permissions.
 
@@ -31,7 +31,6 @@ Server accepts the following environment variables:
  - `POSTGRES_HOST` The hostname for postgres database. (port will default to 5432 the default for Postgres).
  - `POSTGRES_USER` database user.
  - `POSTGRES_PASSWORD` database password.
- - `POSTGRES_DATABASE` database name.
  - `MONGO_HOST` The hostname for mongo database. (port will default to 27017 the default for MongoDB).
  - `MONGO_USER` database user.
  - `MONGO_PASSWORD` database password.
