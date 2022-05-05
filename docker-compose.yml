@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
     app:
-     #image: pavelbelonosov/db-tester
      #
+     #image: pavelbelonosov/db-tester
       build: .
       restart: always
       ports:
