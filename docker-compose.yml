@@ -41,8 +41,8 @@ services:
     adminer:
        image: adminer
        restart: always
-      #ports:
-      #  - 3450:8080
+       ports:
+         - 3450:8080
        container_name: admin
          
    # nginx:
