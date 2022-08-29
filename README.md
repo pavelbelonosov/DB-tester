@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/96337244/166820350-6d67d136-b1c6-44fb-
 ## Intro
 The program creates DBs with one table/collection `Films`, containing three attributes/fields: `id`, `name`, `year`.
 
-- Insert rows/docs: program calculates time of executing given number of INSERT-operations in one batch (max 1_000_000).
+- Insert rows/docs: program calculates time of executing given number of INSERT-operations in one batch (max 100_000).
 - Execute queries: program calculates time of executing given number of SELECT-operations. One query-one connection. No caching (max 1_000).
 
 After each test indexes are dropped, tables are cleared.
@@ -27,7 +27,6 @@ Run `./mvn package`. It will generate a jar named "DBtest-1.0.jar" in target fol
 
 ## Execute project
 Server accepts the following environment variables:
- - `_JAVA_OPTIONS` Size of JVM heap space. The more memory you set, the more chances of successful execution you will have.
  - `POSTGRES_HOST` The hostname for postgres database. (port will default to 5432 the default for Postgres).
  - `POSTGRES_USER` database user.
  - `POSTGRES_PASSWORD` database password.
@@ -46,11 +45,8 @@ Run with `docker-compose up`. It will settle multi-container project.
 ## How to start
 Go to `localhost:8080` and follow instructions.
 
-Nota bene! Calculation can take up to 40 minutes in case of a million-rows table and one thousand queries (depends on hardware). 
+Nota bene! Calculation can take up to 30 minutes in case of a one hundred thousands-rows table and one thousand queries (depends on hardware). 
 To reduce running time, decrease number of rows/documents.
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 [MIT](https://github.com/pavelbelonosov/DB-tester/blob/master/LICENSE)
