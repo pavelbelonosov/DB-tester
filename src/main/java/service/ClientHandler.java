@@ -41,9 +41,7 @@ public class ClientHandler implements Runnable {
                 }
                 parseForm(request);
             }
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getIndexPage());
             writer.flush();
         } catch (IOException e) {
@@ -54,139 +52,107 @@ public class ClientHandler implements Runnable {
     private Boolean parseGetReq(String request, PrintWriter writer) {
 
         if (request.contains("/resultTable" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(page.getContent());
             return true;
         }
         if (request.contains("/sqlite1" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite", 0));
             return true;
         }
         if (request.contains("/s1queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite Queries", 1));
             return true;
         }
         if (request.contains("/sqlite2" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite", 6));
             return true;
         }
         if (request.contains("/s2queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite Queries", 7));
             return true;
         }
         if (request.contains("/sqlite3" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite", 12));
             return true;
         }
         if (request.contains("/s3queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Sqlite Queries", 13));
             return true;
         }
         if (request.contains("/postgres1" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres", 2));
             return true;
         }
         if (request.contains("/p1queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres Queries", 3));
             return true;
         }
         if (request.contains("/postgres2" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres", 8));
             return true;
         }
         if (request.contains("/p2queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres Queries", 9));
             return true;
         }
         if (request.contains("/postgres3" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres", 14));
             return true;
         }
         if (request.contains("/p3queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Postgres Queries", 15));
             return true;
         }
         if (request.contains("/mongo1" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo", 4));
             return true;
         }
         if (request.contains("/m1queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo Queries", 5));
             return true;
         }
         if (request.contains("/mongo2" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo", 10));
             return true;
         }
         if (request.contains("/m2queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo Queries", 11));
             return true;
         }
         if (request.contains("/mongo3" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo", 16));
             return true;
         }
         if (request.contains("/m3queries" + clientID)) {
-            writer.println("HTTP/1.1 200 OK");
-            writer.println("Content-Type: text/html");
-            writer.println("");
+            writeStatusAndType(writer);
             writer.println(getResultPage("Mongo Queries", 17));
             return true;
         }
         return false;
+    }
+
+    private void writeStatusAndType(PrintWriter writer){
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: text/html");
+        writer.println("");
     }
 
     private Boolean parseForm(String request) {
@@ -197,7 +163,7 @@ public class ClientHandler implements Runnable {
 
             String parts3[] = parts[1].split("=");
             long queries = Long.parseLong(parts3[1].replace(" HTTP/1.1", ""));
-            if (rows <= 1000000 && queries <= 1000) {// depends on java heap space//heroku limits 512 dyno memory
+            if (rows <= 100_000 && queries <= 1000) {
                 instantiateTestService(rows, queries);
                 htmlLine = "<td><a href=\"resultTable" + clientID + "\" target=\"_blank\">Result Table </a></td>\n";
                 return true;
