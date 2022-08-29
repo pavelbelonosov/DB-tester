@@ -8,7 +8,6 @@ services:
       ports:
        - 8080:8080
       environment:
-         - _JAVA_OPTIONS=-Xmx1g
          - POSTGRES_HOST=postgres_db
          - POSTGRES_USER=postgres
          - POSTGRES_PASSWORD=166831
